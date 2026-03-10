@@ -9,7 +9,7 @@ def response(flow: http.HTTPFlow):
         
         try:
             res = requests.post(
-                "http://localhost:3000/censor", 
+                "http://censor-proxy:3000/censor", 
                 data=original_data,
                 timeout=10
             )

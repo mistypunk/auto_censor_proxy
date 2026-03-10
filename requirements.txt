@@ -1,0 +1,6 @@
+fastapi
+nudenet
+python-multipart
+uvicorn
+mitmproxy
+requests

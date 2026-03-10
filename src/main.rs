@@ -47,7 +47,7 @@ async fn handle_proxy(body: Bytes, moderator: Arc<ContentModerator>) -> Vec<u8> 
     );
 
     let resp = match client
-        .post("http://localhost:8080/infer")
+        .post("http://nudenet-service:8080/infer")
         .multipart(form)
         .send()
         .await

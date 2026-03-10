@@ -1,14 +1,35 @@
+version: '3.8'
+
 services:
-  nudenet-api:
-    image: ghcr.io/notai-tech/nudenet:latest
-    container_name: nudenet_ai
-    ports:
-      - "8080:8080"
-    environment:
-      - NUDENET_BATCH_SIZE=1
-    privileged: true
+  nudenet-service:
+    build:
+      context: ./model
+    container_name: nudenet-service
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 2G
+
+  censor-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.censor-proxy
+    container_name: censor-proxy
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nudenet-service
+    restart: unless-stopped
+
+  mitm-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.mitm-proxy
+    container_name: mitm-proxy
+    ports:
+      - "8082:8082"
+    depends_on:
+      - censor-proxy
+    restart: unless-stopped
+    volumes:
+      - mitmproxy-certs:/home/mitmproxy/.mitmproxy
+
+volumes:
+  mitmproxy-certs:

@@ -1,0 +1,10 @@
+FROM python:3.9-slim
+
+RUN pip install --no-cache-dir mitmproxy requests
+
+WORKDIR /app
+COPY proxy.py .
+
+EXPOSE 8082
+
+CMD ["mitmdump", "-s", "proxy.py", "--set", "block_global=false", "--listen-host", "0.0.0.0", "-p", "8082"]

@@ -1,0 +1,23 @@
+FROM rustlang/rust:nightly as builder
+WORKDIR /usr/src/app
+
+RUN USER=root cargo new --bin beta_bloquer
+WORKDIR /usr/src/app/beta_bloquer
+COPY ./Cargo.toml ./Cargo.lock ./
+RUN cargo build --release
+RUN rm src/*.rs
+
+COPY ./src ./src
+COPY ./assets ./assets
+
+RUN touch src/main.rs && cargo build --release
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/src/app/beta_bloquer/target/release/beta_bloquer /usr/local/bin/beta_bloquer
+
+COPY --from=builder /usr/src/app/beta_bloquer/assets /assets 
+
+EXPOSE 3000
+CMD ["beta_bloquer"]
